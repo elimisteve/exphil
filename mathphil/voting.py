@@ -279,8 +279,36 @@ if __name__ == '__main__':
     all_prefs.append(prefs5)
 
 
+    # dict[prefs] -> dict[theory] -> winner(s)
+    results = collections.defaultdict(dict)
+
     for prefs in all_prefs:
         print "\n\n\nVotes:", prefs
         print
-        for theory in all_theories + (metatheory_simple,):
-            print theory.func_name, "-", theory(prefs)
+        for theory in all_theories:
+            winners = theory(prefs)
+            results[prefs][theory.func_name] = winners
+            print theory.func_name, '  \t', winners
+
+
+    # Compare each individual theory's computed winners with those
+    # from metatheory_simple, which computes the most common winner
+    # among all the other (non-meta) theories of voting.
+    print "\n\n\nWhich theory agrees with a majority of the other theories" + \
+        " most frequently (regarding the winners of the above elections)?\n"
+
+    agreement_with_most_theories = collections.defaultdict(int)
+
+    for prefs in results:
+        metatheory_simple_winner = metatheory_simple(prefs)
+        for theory in results[prefs]:
+            # If theory agrees with metatheory_simple regarding who
+            # won, track this
+            if results[prefs][theory] == metatheory_simple_winner:
+                agreement_with_most_theories[theory] += 1
+
+    winners = sorted(agreement_with_most_theories.keys(),
+                     key=lambda x: agreement_with_most_theories[x],
+                     reverse=True)
+    for winner in winners:
+        print winner, '  \t', agreement_with_most_theories[winner]
