@@ -10,7 +10,7 @@ class Color(object):
 
     def __init__(self, r, g, b):
         if any([color < 0 or color > 255 for color in (r, g, b)]):
-            raise ValueError("r, g, and b must be between 0 and 255, inclusive")
+            raise ValueError("r, g, and b must be integers between 0 and 255, inclusive")
 
         self.red = r
         self.green = g
